@@ -14,10 +14,6 @@ steps:
       - chmod +x font/build.sh && ./font/build.sh
 
 
-volumes:
-  - name: docker
-    host:
-      path: /var/run/docker.sock
 trigger:
   branch:
     - main
