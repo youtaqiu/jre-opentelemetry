@@ -1,0 +1,19 @@
+kind: pipeline
+name: build
+
+steps:
+  - name: build image
+    commands:
+      - chmod +x build.sh && ./build.sh
+      - chmod +x font/build.sh && ./font/build.sh
+
+volumes:
+  - name: docker
+    host:
+      path: /var/run/docker.sock
+trigger:
+  branch:
+    - main
+  event:
+    - push
+    - merge
