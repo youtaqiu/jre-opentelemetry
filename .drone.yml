@@ -3,6 +3,12 @@ name: build
 
 steps:
   - name: build image
+    image: plugins/docker
+    settings:
+    username:
+      from_secret: dockerUser
+    password:
+      from_secret: dockerPass
     commands:
       - chmod +x build.sh && ./build.sh
       - chmod +x font/build.sh && ./font/build.sh
