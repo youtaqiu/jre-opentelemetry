@@ -1,0 +1,41 @@
+name: Build Loki Docker Image
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  schedule:
+    - cron: "0 2 * * *"  # 每天凌晨2点触发任务
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Log in to Docker Hub
+      run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+    - name: Log in to GitHub Container Registry
+      run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+    - name: Build the Docker image
+      run: docker build . --file Dockerfile --tag ghcr.io/${{ github.actor }}/jre-agent:21 --tag ${{ secrets.DOCKER_USERNAME }}/jre-agent:21
+      working-directory: ./agent
+
+    - name: Build the Docker image with JRE 17
+      run: docker build . --file Dockerfile --build-arg JRE_VERSION=17 --tag ghcr.io/${{ github.actor }}/jre-agent:17 --tag ${{ secrets.DOCKER_USERNAME }}/jre-agent:17
+      working-directory: ./agent
+
+    - name: Push Docker image to GitHub Container Registry
+      run: docker push ghcr.io/${{ github.actor }}/jre-agent:21
+
+    - name: Push Docker image to GitHub Container Registry with JRE 17
+      run: docker push ghcr.io/${{ github.actor }}/jre-agent:17
+
+    - name: Push Docker image to Docker Hub
+      run: docker push ${{ secrets.DOCKER_USERNAME }}/jre-agent:21
+
+    - name: Push Docker image to Docker Hub with JRE 17
+      run: docker push ${{ secrets.DOCKER_USERNAME }}/jre-agent:17
