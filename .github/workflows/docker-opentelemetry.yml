@@ -1,4 +1,4 @@
-name: Build Agent Docker Image
+name: Build Opentelemetry Agent Docker Image
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
     branches: [ "main" ]
 
   schedule:
-  - cron: 57 7 * * *
+  - cron: 59 7 * * *
 
 jobs:
   build:
@@ -23,21 +23,21 @@ jobs:
       run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag ghcr.io/${{ github.actor }}/jre-agent:21 --tag ${{ secrets.DOCKER_USERNAME }}/jre-agent:21
-      working-directory: ./agent
+      run: docker build . --file Dockerfile --tag ghcr.io/${{ github.actor }}/jre-otel:21 --tag ${{ secrets.DOCKER_USERNAME }}/jre-otel:21
+      working-directory: ./opentelemetry
 
     - name: Build the Docker image with JRE 17
-      run: docker build . --file Dockerfile --build-arg JRE_VERSION=17 --tag ghcr.io/${{ github.actor }}/jre-agent:17 --tag ${{ secrets.DOCKER_USERNAME }}/jre-agent:17
+      run: docker build . --file Dockerfile --build-arg JRE_VERSION=17 --tag ghcr.io/${{ github.actor }}/jre-otel:17 --tag ${{ secrets.DOCKER_USERNAME }}/jre-otel:17
       working-directory: ./agent
 
     - name: Push Docker image to GitHub Container Registry
-      run: docker push ghcr.io/${{ github.actor }}/jre-agent:21
+      run: docker push ghcr.io/${{ github.actor }}/jre-otel:21
 
     - name: Push Docker image to GitHub Container Registry with JRE 17
-      run: docker push ghcr.io/${{ github.actor }}/jre-agent:17
+      run: docker push ghcr.io/${{ github.actor }}/jre-otel:17
 
     - name: Push Docker image to Docker Hub
-      run: docker push ${{ secrets.DOCKER_USERNAME }}/jre-agent:21
+      run: docker push ${{ secrets.DOCKER_USERNAME }}/jre-otel:21
 
     - name: Push Docker image to Docker Hub with JRE 17
-      run: docker push ${{ secrets.DOCKER_USERNAME }}/jre-agent:17
+      run: docker push ${{ secrets.DOCKER_USERNAME }}/jre-otel:17
